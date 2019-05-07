@@ -1,0 +1,67 @@
+body{
+    background-color: #FFFFFF
+}
+
+/* LOGIN */
+#containerLogin {
+    width:325px;
+    margin-top: 120px;
+}
+
+/* ERROR BOX */
+.alert {
+    padding: 20px;
+    background-color: #f44336; /* Red */
+    color: white;
+    margin-bottom: 15px;
+}
+
+/* The close button */
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+    color: black;
+}
+
+/* HOME */
+.containerPost {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.containerPost::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.containerPost img {
+  float: left;
+  max-width: 60px;
+  width: 100%;
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+.timePost {
+  float: left;
+  color: #aaa;
+}
+
+.userPost {
+  float: left;
+  color: #5B9DFF;
+}
