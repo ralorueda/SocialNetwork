@@ -28,6 +28,12 @@ public class LoginServlet extends HttpServlet {
 
         // If it's the first time, redirect to the jsp
         if (session.getAttribute("thisUser") == null && username == null) {
+            if (request.getParameter("registered") != null) {
+                request.setAttribute("registered", "true");
+            } else if (request.getParameter("deleted") != null) {
+                request.setAttribute("deleted", "true");
+                request.setAttribute("account", request.getParameter("account"));
+            }
             RequestDispatcher rd = this.getServletContext().getRequestDispatcher("/login.jsp");
             rd.forward(request, response);
         } else {

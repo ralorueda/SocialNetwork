@@ -3,6 +3,7 @@ package app.servlet;
 import app.ejb.PartyFacade;
 import app.ejb.UserFacade;
 import app.entity.Party;
+import app.entity.Post;
 import app.entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,8 +15,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-@WebServlet(name = "CreateGroupServlet", urlPatterns = {"/CreateGroupServlet"})
+@WebServlet(name = "CreateGroupServlet", urlPatterns = {"/createGroup"})
 public class CreateGroupServlet extends HttpServlet {
 
     @EJB
@@ -26,25 +28,28 @@ public class CreateGroupServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        // Getting session and current user
+        HttpSession session = request.getSession();
+        User u = (User) session.getAttribute("thisUser");
 
-        String name = request.getParameter("groupname");
-        String ownerid = request.getParameter("ownerid");
-        User user = this.userFacade.find(Integer.parseInt(ownerid));
-
-        if (name.equals("")) {
-            response.sendRedirect(request.getContextPath() + "/home.jsp?mensaje=true");
+        // If user is not logged, redirect to login
+        if (session.getAttribute("thisUser") == null) {
+            response.sendRedirect("login");
         } else {
-
-            this.partyFacade.insertGroup(name, user.getId());
-            name = "";
-            RequestDispatcher rd = request.getRequestDispatcher("/home.jsp");
-            rd.forward(request, response);
+            // Add a new group and forwarding to jsp file      
+            String name = request.getParameter("groupname");
+            String description = request.getParameter("description");
+            Party group = new Party();
+            group.setName(name);
+            group.setDescription(description);
+            group.setOwner(u);
+            this.partyFacade.insertGroup(group);
+            response.sendRedirect("groups");
         }
-
+        
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

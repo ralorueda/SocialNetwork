@@ -5,11 +5,16 @@
  */
 package app.servlet;
 
-import app.ejb.PostFacade;
+import app.ejb.PartyFacade;
+import app.ejb.UserFacade;
+import app.entity.Party;
 import app.entity.Post;
 import app.entity.User;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 import javax.ejb.EJB;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,17 +24,27 @@ import javax.servlet.http.HttpSession;
 
 /**
  *
- * @author Administrator
+ * @author love2
  */
-@WebServlet(name = "DeletePostServlet", urlPatterns = {"/DeletePostServlet"})
-public class DeletePostServlet extends HttpServlet {
+@WebServlet(name = "GroupsServlet", urlPatterns = {"/groups"})
+public class GroupsServlet extends HttpServlet {
 
     @EJB
-    private PostFacade postFacade;
+    private PartyFacade partyFacade;
+    
 
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         // Getting session and current user
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("thisUser");
@@ -38,18 +53,19 @@ public class DeletePostServlet extends HttpServlet {
         if (session.getAttribute("thisUser") == null) {
             response.sendRedirect("login");
         } else {
-            String postId = request.getParameter("postId");
-            Post post = postFacade.find(Integer.parseInt(postId));
-            this.postFacade.remove(post);
-            if (request.getParameter("profile") == null) {
-                response.sendRedirect("home");
-            } else {
-                response.sendRedirect("profile?profile=" + request.getParameter("profile"));
-            }
+            // Getting posts to show and forwarding to jsp file
+            List <Party> listParty;
+
+            listParty = this.partyFacade.findByIdOwnerAndIdMember(u.getId());
+        
+            request.setAttribute("listParty", listParty);
+            
+            RequestDispatcher rd = this.getServletContext().getRequestDispatcher("/groups.jsp");
+            rd.forward(request, response);
         }
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

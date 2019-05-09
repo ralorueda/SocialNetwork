@@ -38,6 +38,13 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Party.findByName", query = "SELECT p FROM Party p WHERE p.name = :name")})
 public class Party implements Serializable {
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "party")
+    private Collection<Groupmessage> groupmessageCollection;
+
+    @Size(max = 300)
+    @Column(name = "description")
+    private String description;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -123,6 +130,23 @@ public class Party implements Serializable {
     @Override
     public String toString() {
         return "app.entity.Party[ id=" + id + " ]";
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @XmlTransient
+    public Collection<Groupmessage> getGroupmessageCollection() {
+        return groupmessageCollection;
+    }
+
+    public void setGroupmessageCollection(Collection<Groupmessage> groupmessageCollection) {
+        this.groupmessageCollection = groupmessageCollection;
     }
     
 }

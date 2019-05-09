@@ -5,18 +5,17 @@
  */
 package app.ejb;
 
-import app.entity.User;
+import app.entity.Groupmessage;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 /**
  *
  * @author Administrator
  */
 @Stateless
-public class UserFacade extends AbstractFacade<User> {
+public class GroupmessageFacade extends AbstractFacade<Groupmessage> {
 
     @PersistenceContext(unitName = "SocialNetwork-ejbPU")
     private EntityManager em;
@@ -26,18 +25,8 @@ public class UserFacade extends AbstractFacade<User> {
         return em;
     }
 
-    public UserFacade() {
-        super(User.class);
+    public GroupmessageFacade() {
+        super(Groupmessage.class);
     }
-
-    public User findByUsername(String username) {
-        Query query = getEntityManager().createQuery("select u from User u where u.username=:username");
-        query.setParameter("username", username);
-        if (query.getResultList().isEmpty()) {
-            return null;
-        } else {
-            return (User) query.getResultList().get(0);
-        }
-    }
-
+    
 }

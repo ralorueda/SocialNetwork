@@ -29,7 +29,7 @@ public class Profile extends HttpServlet {
 
         // Getting posts to show
         List<Post> posts;
-        posts = postFacade.findFriendsPostsByUserId(u.getId());
+        posts = postFacade.findMyPosts(u.getId());
         request.setAttribute("posts", posts);
         RequestDispatcher rd = this.getServletContext().getRequestDispatcher("/profile.jsp");
         rd.forward(request, response);

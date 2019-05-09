@@ -1,9 +1,9 @@
 package app.servlet;
 
+import app.ejb.RolFacade;
 import app.ejb.UserFacade;
 import app.entity.User;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +24,9 @@ public class RegisterServlet extends HttpServlet {
     @EJB
     private UserFacade userFacade;
 
+    @EJB
+    private RolFacade rolFacade;
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -34,51 +37,53 @@ public class RegisterServlet extends HttpServlet {
         if (session.getAttribute("thisUser") != null) {
             response.sendRedirect("home");
         } else {
-            String str;
-            User user = new User();
-            request.setAttribute("error", "");
-            str = request.getParameter("name");
-            user.setName(str);
-            str = request.getParameter("surnames");
-            user.setSurnames(str);
-            str = request.getParameter("username");
-            user.setUsername(str);
-            str = request.getParameter("email");
-            user.setEmail(str);
-            str = request.getParameter("password");
-            user.setPassword(str);
-            String password2 = request.getParameter("confirmPassword");
-            String birthdate = request.getParameter("birthdate");
-            request.setAttribute("birthdate", birthdate);
+            if (request.getParameter("first") != null) {
+                String str;
+                User user = new User();
+                str = request.getParameter("name");
+                user.setName(str);
+                str = request.getParameter("surnames");
+                user.setSurnames(str);
+                str = request.getParameter("username");
+                user.setUsername(str);
+                str = request.getParameter("email");
+                user.setEmail(str);
+                str = request.getParameter("password");
+                user.setPassword(str);
+                str = request.getParameter("description");
+                if(str.equals("")) {
+                    str = "User with no description.";
+                }
+                user.setDescription(str);
+                String password2 = request.getParameter("confirmPassword");
+                String birthdate = request.getParameter("birthdate");
+                Date date = null;
+                try {
+                    date = new SimpleDateFormat("yyyy-mm-dd").parse(birthdate);
+                    user.setBirthdate(date);
+                } catch (ParseException ex) {
+                    Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-            /*  DateFormat df = new SimpleDateFormat("dd/MM/yyyy"); 
-        
-        try {
-            // Convert from String to Date
-            Date BDate = df.parse(birthdate);
-            user.setBirthdate(BDate);
-        } catch (ParseException ex) {
-            Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        DateFormat df2 = new SimpleDateFormat("dd/MM/yyyy"); 
-            String strBDate = df2.format(user.getBirthdate());
-            request.setAttribute("datePrueba", strBDate);*/
-            request.setAttribute("user", user);
+                request.setAttribute("user", user);
 
-            if (userFacade.findByUsername(user.getUsername()) != null) {
-                request.setAttribute("error", "user");
-                RequestDispatcher rd = request.getRequestDispatcher("/register.jsp");
-                rd.forward(request, response);
+                if (userFacade.findByUsername(user.getUsername()) != null) {
+                    request.setAttribute("error", "user");
+                    RequestDispatcher rd = request.getRequestDispatcher("/register.jsp");
+                    rd.forward(request, response);
 
-            } else if (!user.getPassword().equals(password2)) {
-                request.setAttribute("error", "password");
-                RequestDispatcher rd = request.getRequestDispatcher("/register.jsp");
-                rd.forward(request, response);
+                } else if (!user.getPassword().equals(password2)) {
+                    request.setAttribute("error", "password");
+                    RequestDispatcher rd = request.getRequestDispatcher("/register.jsp");
+                    rd.forward(request, response);
+                } else {
+                    user.setRolId(rolFacade.find(2));
+                    userFacade.create(user);
+                    response.sendRedirect(request.getContextPath() + "/login?registered=true");
+                }
             } else {
-                //userFacade.insertUser(user.getName(), user.getSurnames(), user.getUsername(), user.getPassword(), user.getEmail(), birthdate, 2);
-                userFacade.insertUser(user, birthdate);
-                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                RequestDispatcher rd = this.getServletContext().getRequestDispatcher("/register.jsp");
+                rd.forward(request, response);
             }
         }
     }

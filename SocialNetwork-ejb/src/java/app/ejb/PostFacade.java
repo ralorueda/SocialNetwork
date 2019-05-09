@@ -6,14 +6,8 @@
 package app.ejb;
 
 import app.entity.Post;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,7 +15,7 @@ import javax.persistence.Query;
 
 /**
  *
- * @author Raúl
+ * @author Administrator
  */
 @Stateless
 public class PostFacade extends AbstractFacade<Post> {
@@ -50,6 +44,17 @@ public class PostFacade extends AbstractFacade<Post> {
         }
     }
 
+    public List<Post> findMyPosts(int id) {
+        Query query;
+        query = em.createQuery("select p from Post p where p.author.id = :id order by p.date desc");
+        query.setParameter("id", id);
+        if (query.getResultList().isEmpty()) {
+            return null;
+        } else {
+            return query.getResultList();
+        }
+    }
+
     public Integer getNextId() {
         Query query;
         query = em.createQuery("select max(p.id) from Post p");
@@ -65,4 +70,5 @@ public class PostFacade extends AbstractFacade<Post> {
         post.setDate(new Date());
         this.create(post);
     }
+
 }

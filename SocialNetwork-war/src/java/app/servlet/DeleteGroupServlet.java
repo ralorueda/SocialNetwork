@@ -5,10 +5,12 @@
  */
 package app.servlet;
 
-import app.ejb.PostFacade;
-import app.entity.Post;
+import app.ejb.PartyFacade;
+import app.entity.Friendship;
+import app.entity.Party;
 import app.entity.User;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,17 +21,25 @@ import javax.servlet.http.HttpSession;
 
 /**
  *
- * @author Administrator
+ * @author CharlesPC
  */
-@WebServlet(name = "DeletePostServlet", urlPatterns = {"/DeletePostServlet"})
-public class DeletePostServlet extends HttpServlet {
+@WebServlet(name = "DeleteGroupServlet", urlPatterns = {"/DeleteGroupServlet"})
+public class DeleteGroupServlet extends HttpServlet {
 
     @EJB
-    private PostFacade postFacade;
+    private PartyFacade partyFacade;
 
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         // Getting session and current user
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("thisUser");
@@ -38,18 +48,14 @@ public class DeletePostServlet extends HttpServlet {
         if (session.getAttribute("thisUser") == null) {
             response.sendRedirect("login");
         } else {
-            String postId = request.getParameter("postId");
-            Post post = postFacade.find(Integer.parseInt(postId));
-            this.postFacade.remove(post);
-            if (request.getParameter("profile") == null) {
-                response.sendRedirect("home");
-            } else {
-                response.sendRedirect("profile?profile=" + request.getParameter("profile"));
-            }
+            String partyID = request.getParameter("partyId");    
+            Party party = this.partyFacade.find(Integer.parseInt(partyID));
+            this.partyFacade.remove(party);
+            response.sendRedirect("groups");
         }
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -62,7 +68,7 @@ public class DeletePostServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-    }
+        }
 
     /**
      * Handles the HTTP <code>POST</code> method.

@@ -5,11 +5,10 @@
  */
 package app.servlet;
 
-import app.ejb.PostFacade;
-import app.entity.Post;
 import app.entity.User;
 import java.io.IOException;
-import javax.ejb.EJB;
+import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,35 +20,42 @@ import javax.servlet.http.HttpSession;
  *
  * @author Administrator
  */
-@WebServlet(name = "DeletePostServlet", urlPatterns = {"/DeletePostServlet"})
-public class DeletePostServlet extends HttpServlet {
+@WebServlet(name = "SettingsServlet", urlPatterns = {"/settings"})
+public class SettingsServlet extends HttpServlet {
 
-    @EJB
-    private PostFacade postFacade;
-
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Getting session and current user
+        // Getting session and parameters
         HttpSession session = request.getSession();
-        User u = (User) session.getAttribute("thisUser");
 
-        // If user is not logged, redirect to login
+        // If user already logged, redirect to home
         if (session.getAttribute("thisUser") == null) {
-            response.sendRedirect("login");
+            response.sendRedirect("login.jsp");
         } else {
-            String postId = request.getParameter("postId");
-            Post post = postFacade.find(Integer.parseInt(postId));
-            this.postFacade.remove(post);
-            if (request.getParameter("profile") == null) {
-                response.sendRedirect("home");
-            } else {
-                response.sendRedirect("profile?profile=" + request.getParameter("profile"));
+            User u = (User) session.getAttribute("thisUser");
+            request.setAttribute("user", u);
+            if (request.getParameter("edited") != null) {
+                request.setAttribute("edited", "true");
             }
+            if (request.getParameter("deleted") != null) {
+                request.setAttribute("deleted", "true");
+            }
+            RequestDispatcher rd = this.getServletContext().getRequestDispatcher("/settings.jsp");
+            rd.forward(request, response);
         }
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

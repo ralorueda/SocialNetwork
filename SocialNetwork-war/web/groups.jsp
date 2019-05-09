@@ -1,10 +1,12 @@
-<%@page import="app.entity.User"%>
+
 <%@page import="java.util.List"%>
+<%@page import="app.entity.Party"%>
+<%@page import="app.entity.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%
     User u = (User) session.getAttribute("thisUser");
-    List<User> friends = (List) request.getAttribute("friends");
+    List<Party> listParty = (List) request.getAttribute("listParty");
 %>
 <html>
     <head>
@@ -74,35 +76,59 @@
                                 <br >
                                 <ul class="list-group list-primary">
                                     <a href="requests" class="list-group-item">Friend requests <span class="badge badge-primary badge-pill"><% out.println(u.getRequestCollection().size() + u.getRequestCollection1().size()); %></span></a>
-                                    <a href="friends" class="list-group-item active">Friends<span class="badge badge-primary badge-pill"><% out.println(u.getFriendshipCollection().size() + u.getFriendshipCollection1().size()); %></span></a>
-                                    <a href="groups" class="list-group-item">Groups<span class="badge badge-primary badge-pill"><% out.println(u.getPartyCollection().size() + u.getMembershipCollection().size()); %></span></a>
+                                    <a href="friends" class="list-group-item">Friends<span class="badge badge-primary badge-pill"><% out.println(u.getFriendshipCollection().size() + u.getFriendshipCollection1().size()); %></span></a>
+                                    <a href="groups" class="list-group-item active">Groups<span class="badge badge-primary badge-pill"><% out.println(u.getPartyCollection().size() + u.getMembershipCollection().size()); %></span></a>
                                 </ul>
                             </div>
                         </div>
 
-                        <!-- Friend list part -->
+                        <!-- Group list part -->
                         <div class="col-md-9">
                             <div class="col-md-12" style="border-width: 1px 1px 0px 1px; border-style: solid; border-color: lightgrey; background: #f1f3f6;">
-                                <h3 style="text-align: left">Friends <p><small>This is your friends list.</small></p></h3>
+                                <h3 style="text-align: left">Groups <p><small>This is your group list.</small></p></h3>                                
+                                <p></p>
                             </div>
                             <div class="col-md-12" style="border: 1px solid lightgrey; background: #e5eaf2;">      
-                                <br/>
+                                <br>
+                                <div>
+                                    <a href="#popUp" data-toggle="modal">
+                                        <button class="btn btn-default">Create new group</button> 
+                                    </a>                                    
+                                </div>
+                                <br>
                                 <%
-                                    if (friends != null) {
-                                        for (User friend : friends) {
+                                    if (listParty != null) {
+                                        for (Party party : listParty) {
                                 %>
                                 <div class="containerPost">
                                     <img src="Images/userIcon.png" alt="Avatar" style="width:100%;">
-                                    <span class="friendInfo"><a href="/SocialNetwork-war/profile?id=<% out.println(friend.getId());%>"><%= friend.getName() + " " + friend.getSurnames() + " - @" + friend.getUsername()%></a></span>
-                                    &nbsp;&nbsp;                                  
+                                    <span class="partyInfo"><a href="/SocialNetwork-war/group?id=<%=party.getId()%>"><%=party.getName()%></a></span>
+                                    &nbsp;&nbsp;
+                                    <%
+                                        if (party.getDescription() != null) {
+                                    %>
                                     <p>
-                                        <%=friend.getDescription()%>
+                                        <%=party.getDescription()%>
                                     </p>
+                                    <%
+                                    } else {
+                                    %>
+                                    <p> Group with no description.</p>
+                                    <%
+                                        }
+                                    %>
+                                    <%
+                                        if (u.getId() == party.getOwner().getId()) {
+                                    %>
+
                                     <div align="right">
-                                        <a href="DeleteFriendServlet?friendId=<%= friend.getId()%>" data-toggle="modal">
+                                        <a href="DeleteGroupServlet?partyId=<%= party.getId()%>" data-toggle="modal">
                                             <span style="font-size: 20px" class="glyphicon glyphicon-minus-sign" id="delete"></span>
                                         </a>
                                     </div>   
+                                    <%
+                                        }
+                                    %>                      
                                 </div>
                                 <%
                                         }
@@ -110,20 +136,54 @@
                                 %>
                             </div>
                         </div>
-
                     </div>
-                    &nbsp;
-                    <hr>
+                </div>
+            </div>
 
-                    <!-- Footer -->
-                    <footer>
-                        <div class="row">
-                            <div class="col-lg-12 footer-align">
-                                <p>Copyright &copy; Instamum 2019. All rights reserved</p>
+            <!-- Pop up delete profile -->
+            <form action="createGroup" method="post">
+                <div id="popUp" class="modal fade" >
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Creating new group...</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="name">Name:</label>
+                                    <input type="text" name="groupname" class="form-control" value="" id="nameInput" required >
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description:</label>
+                                    <br>
+                                    <textarea rows="3" name="description"  class="form-control" id="description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <input  name="owner" type="hidden" class="form-control" required value="<%=u.getId()%>">
+                                </div>  
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Create</button>
                             </div>
                         </div>
-                    </footer>
-                    <!-- End of the footer -->
+                    </div>
                 </div>
-                </body>
-                </html>
+            </form>
+
+            &nbsp;
+            <hr>
+
+            <!-- Footer -->
+            <footer>
+                <div class="row">
+                    <div class="col-lg-12 footer-align">
+                        <p>Copyright &copy; Instamum 2019. All rights reserved</p>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of the footer -->
+        </div>
+    </body>
+</html>

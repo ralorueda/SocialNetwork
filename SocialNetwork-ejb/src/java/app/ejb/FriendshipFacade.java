@@ -31,7 +31,7 @@ public class FriendshipFacade extends AbstractFacade<Friendship> {
     public FriendshipFacade() {
         super(Friendship.class);
     }
-
+    
     public List<User> findFriendsListById(int userID) {
         Query query;
         query = this.getEntityManager().createQuery("select u from User u join Friendship f where (f.user.id =:id and f.user1.id = u.id) or (f.user1.id =:id and f.user.id = u.id)");
@@ -46,4 +46,5 @@ public class FriendshipFacade extends AbstractFacade<Friendship> {
         query.setParameter("userId", userId);
         return (Friendship) query.getSingleResult();
     }
+
 }

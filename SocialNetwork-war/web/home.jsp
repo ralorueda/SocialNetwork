@@ -42,15 +42,18 @@
                         <li class="active"><a href="home">Home </a></li>
                         <li><a href="mentions">Mentions</a></li> 
                         <li><a href="profile?id=<% out.println(u.getId());%>">Profile</a></li>    
-                        <li><a href="settings.jsp">Settings</a></li>   
+                        <li><a href="settings">Settings</a></li>   
                         <li><a href="logOut"><font style="color:#eb3f3f">Log out</font></a></li>   
                     </ul>                   
-                    <p></p>
-                    <form action="SearchServlet">
-                        <div class="col-sm-3" align="right">
-                            <input type="text" name="search" placeholder="Search"/> <a href="search.jsp"> <img src="Images/search.png"  style="width: 10%; height: 10%; display: inline-block; clear: both; "/> </a> 
+                    <p></p> 
+                    <form class="navbar-form" action="SearchServlet" role="search" align="right">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                            </div>
                         </div>
-                    </form>  
+                    </form>
                 </div>
             </div>
         </nav>
@@ -89,8 +92,8 @@
                     <div class="col-md-12" style="border: 1px solid lightgrey; background: #e5eaf2;"> 
                         <br/>
                         <form name="newPost" action="newPost"  method="post">
-                            <textarea name="text" class="form-control" rows="3" placeholder="Write your post here!" required></textarea>
-                            <button type="submit" class="btn btn-default">Post</button>                                    
+                            <textarea style="resize: none;" name="text" class="form-control" rows="3" placeholder="Write your post here!" required></textarea>
+                            <button style="width: 100px;" type="submit" class="btn btn-default">Post</button>                                    
                         </form>
                         <br>                     
                         <%

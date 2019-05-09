@@ -8,6 +8,11 @@ body{
     margin-top: 120px;
 }
 
+/* REGISTER */
+#containerRegister {
+    width:500px;
+}
+
 /* ERROR BOX */
 .alert {
     padding: 20px;

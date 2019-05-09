@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -45,6 +45,9 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email")
     , @NamedQuery(name = "User.findByBirthdate", query = "SELECT u FROM User u WHERE u.birthdate = :birthdate")})
 public class User implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    private Collection<Groupmessage> groupmessageCollection;
 
     @Size(max = 150)
     @Column(name = "description")
@@ -278,6 +281,15 @@ public class User implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @XmlTransient
+    public Collection<Groupmessage> getGroupmessageCollection() {
+        return groupmessageCollection;
+    }
+
+    public void setGroupmessageCollection(Collection<Groupmessage> groupmessageCollection) {
+        this.groupmessageCollection = groupmessageCollection;
     }
     
 }

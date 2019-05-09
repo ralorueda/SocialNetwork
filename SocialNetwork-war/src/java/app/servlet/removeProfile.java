@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package app.servlet;
 
-import app.ejb.PostFacade;
-import app.entity.Post;
+import app.ejb.UserFacade;
 import app.entity.User;
 import java.io.IOException;
 import javax.ejb.EJB;
@@ -17,39 +11,38 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-/**
- *
- * @author Administrator
- */
-@WebServlet(name = "DeletePostServlet", urlPatterns = {"/DeletePostServlet"})
-public class DeletePostServlet extends HttpServlet {
+@WebServlet(name = "removeProfile", urlPatterns = {"/removeProfile"})
+public class removeProfile extends HttpServlet {
 
     @EJB
-    private PostFacade postFacade;
+    private UserFacade userFacade;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Getting session and current user
+        // Getting session
         HttpSession session = request.getSession();
-        User u = (User) session.getAttribute("thisUser");
 
-        // If user is not logged, redirect to login
-        if (session.getAttribute("thisUser") == null) {
-            response.sendRedirect("login");
-        } else {
-            String postId = request.getParameter("postId");
-            Post post = postFacade.find(Integer.parseInt(postId));
-            this.postFacade.remove(post);
-            if (request.getParameter("profile") == null) {
-                response.sendRedirect("home");
+        // If user was logged
+        if (session.getAttribute("thisUser") != null) {
+            User u = (User) session.getAttribute("thisUser");
+            // If password is right
+            if (request.getParameter("password").equals(u.getPassword())) {
+                String account = u.getUsername();
+                userFacade.remove(u);
+                // Removing user from session and redirecting to login
+                session.removeAttribute("thisUser");
+                response.sendRedirect("login?deleted=true&account=" + account);
             } else {
-                response.sendRedirect("profile?profile=" + request.getParameter("profile"));
+                response.sendRedirect("settings?deleted=false");
             }
+        } else {
+            response.sendRedirect("login");
         }
+
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
